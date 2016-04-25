@@ -1,6 +1,12 @@
 # sources folder
 Sources/*
 
+# Folder config file
+Desktop.ini
+
+# Windows shortcuts
+*.lnk
+
 # Temp files
 *.tmp
 
