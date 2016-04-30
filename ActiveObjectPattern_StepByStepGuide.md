@@ -57,9 +57,6 @@ public void run() {
 
 ## 4. Implement the Future object: `QueryRequestFuture`
 The `QueryRequestFuture` will be used by the client to retrieve the result and check wether the computation was done or not. I have created a new class implementing the `Future`-interface which defines the most common methods used for Futures. In the constructor I have passed a reference to our objectified request (the `QueryRequest` class). Now you just have to implement all the methods of the `Future`-inteface by delegating the calls to the `QueryRequest`. In the `get()`-method you may want to check if the `QueryRequest` is already done or not before you return the result.
-
-## 4. Create a Proxy object for the database: `DatabaseProxy`
-Now we will implement a Proxy for our `DatabaseServant` object. It will accept the method call from the client, objectifies it and forwards it to the `RequestScheduler` for execution. The Proxy will have nearly the same interface than the real Servant despite the returning types of the methods. The Proxy will return a Future object. In the constructor we will pass the Servant object and the Scheduler to be flexible. This may need further improvement to hide this information from the client.
 ``` java
 public class QueryRequestFuture implements Future<String[]> {
   private final QueryRequest queryRequest;
@@ -68,19 +65,23 @@ public class QueryRequestFuture implements Future<String[]> {
   	super();
     this.queryRequest = queryRequest;
   }
+
   @Override
-	public String[] get() throws InterruptedException, ExecutionException {
+  public String[] get() throws InterruptedException, ExecutionException {
     try {
-        if (queryRequest.isDone() && !queryRequest.isCancelled())
-            return queryRequest.get();
+      if (queryRequest.isDone() && !queryRequest.isCancelled())
+        return queryRequest.get();
     } catch (Exception ex) {
-        System.err.println("Failed to get result!");
+      System.err.println("Failed to get result!");
     }
     return null;
-	}
+  }
   [...]
 }
 ```
+
+## 4. Create a Proxy object for the database: `DatabaseProxy`
+Now we will implement a Proxy for our `DatabaseServant` object. It will accept the method call from the client, objectifies it and forwards it to the `RequestScheduler` for execution. The Proxy will have nearly the same interface than the real Servant despite the returning types of the methods. The Proxy will return a Future object. In the constructor we will pass the Servant object and the Scheduler to be flexible. This may need further improvement to hide this information from the client.
 
 The class will only have one method `queryData()`, which will act as a proxy for the `queryData()`-method of the `DatabaseServant`. It objectifies the method call to a `QueryRequest` object and schedules it for concurrent execution with the `QueryScheduler`. The method will return a `QueryRequestFuture` object which allows the client to poll for the result from time to time. See my implementation below:
 ``` java
