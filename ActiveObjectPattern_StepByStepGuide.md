@@ -87,11 +87,14 @@ private static final int NUMBER_OF_WORKERS = 2;
 ```
 In the `testQueryData()`-method we need to make following changes:
 - Add an `QueryScheduler` instance with `NUMBER_OF_WORKERS` worker threads.
-  ``` java
-  QueryScheduler scheduler = new QueryScheduler(NUMBER_OF_WORKERS);
-  ```
+``` java
+QueryScheduler scheduler = new QueryScheduler(NUMBER_OF_WORKERS);
+```
 - Create the `DatabaseProxy` object.
-  ``` java
-  DatabaseProxy databaseProxy = new DatabaseProxy(database, scheduler);
-  ```
-- Change the query methods to use the Proxy object instead of the Servant directly and adapt the result data types to match the `QueryRequestFuture` return types.
+``` java
+DatabaseProxy databaseProxy = new DatabaseProxy(database, scheduler);
+```
+- Change the query methods to use the Proxy object instead of the Servant directly and adapt the result data types to match the `QueryRequestFuture` return types. Do this for all three queries.
+``` java
+QueryRequestFuture future1 = databaseProxy.queryData("Jack", "Miller");
+```
